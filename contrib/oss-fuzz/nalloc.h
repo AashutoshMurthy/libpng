@@ -25,10 +25,15 @@
 #ifndef NALLOC_H_
 #define NALLOC_H_
 
+#if defined(__clang__) && defined(__has_feature)
+#if __has_feature(address_sanitizer)
+#define NALLOC_ASAN 1
+#endif
+#endif
+
+#if defined(NALLOC_ASAN) && defined(__has_feature)
+#if !__has_feature(memory_sanitizer)
 #define FUZZER_ENABLE_NALLOC 1
-#if defined(__has_feature)
-#if __has_feature(memory_sanitizer)
-#undef FUZZER_ENABLE_NALLOC
 #endif
 #endif
 
@@ -38,12 +43,6 @@
 #define nalloc_start(x, y)
 #define nalloc_end()
 #else
-
-#if defined(__clang__) && defined(__has_feature)
-#if __has_feature(address_sanitizer)
-#define NALLOC_ASAN 1
-#endif
-#endif
 
 #include <errno.h>
 #include <stdbool.h>
